@@ -1,52 +1,38 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="bg-gray-900 text-white">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - OwlFlow</title>
-    <script type="importmap"></script>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/OwlFlow.styles.css" asp-append-version="true" />
+    <meta charset="UTF-8" />
+    <title>OwlFlow</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index">OwlFlow</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+<body class="flex h-screen font-sans">
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - OwlFlow - <a asp-area="" asp-page="/Privacy">Privacy</a>
+    <!-- Sidebar -->
+    <aside class="w-64 bg-gray-800 p-6 flex flex-col justify-between">
+        <div>
+            <h1 class="text-2xl font-bold mb-10">Load Balancer</h1>
+            <nav class="space-y-2">
+                <a href="#" class="flex items-center space-x-2 bg-gray-700 px-4 py-2 rounded">
+                    <span>📁</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="flex items-center space-x-2 hover:bg-gray-700 px-4 py-2 rounded">
+                    <span>📊</span>
+                    <span>Servers</span>
+                </a>
+                <a href="#" class="flex items-center space-x-2 hover:bg-gray-700 px-4 py-2 rounded">
+                    <span>🔍</span>
+                    <span>Analytics</span>
+                </a>
+            </nav>
         </div>
-    </footer>
+        <button class="flex items-center space-x-2 mt-10 px-4 py-2 bg-gray-700 rounded">
+            <span>👤</span>
+            <span>Admin Account</span>
+        </button>
+    </aside>
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    @RenderBody()
 
-    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

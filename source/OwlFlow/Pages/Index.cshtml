@@ -5,6 +5,51 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <!-- Main Content -->
+    <main class="flex-1 p-10">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-3xl font-bold">Servers</h2>
+            <a asp-page="/AddServer" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded">Add Server</a>
+        </div>
+
+        <div class="bg-gray-800 rounded-lg overflow-hidden">
+            <table class="min-w-full table-auto text-left">
+                <thead class="bg-gray-700 text-gray-300">
+                    <tr>
+                        <th class="px-6 py-3">Server ID</th>
+                        <th class="px-6 py-3">IP Address</th>
+                        <th class="px-6 py-3">Status</th>
+                        <th class="px-6 py-3">Ping</th>
+                        <th class="px-6 py-3">CPU Usage</th>
+                        <th class="px-6 py-3">Memory Usage</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-700">
+                @* @foreach (var server in Model.Servers)
+                {
+                    <tr>
+                        <td class="px-6 py-4">@server.Id</td>
+                        <td class="px-6 py-4">@server.IP</td>
+                        <td class="px-6 py-4">
+                            @if (server.Online)
+                            {
+                                <span class="text-green-400">🟢 Online</span>
+                            }
+                            else
+                            {
+                                <span class="text-red-400">🔴 Offline</span>
+                            }
+                        </td>
+                        <td class="px-6 py-4">@(server.Online ? $"{server.Ping} ms" : "—")</td>
+                        <td class="px-6 py-4">@(server.Online ? $"{server.CPU}%" : "—")</td>
+                        <td class="px-6 py-4 flex items-center justify-between">
+                            @(server.Online ? $"{server.Memory}%" : "—")
+                            <button class="ml-2 text-gray-400 hover:text-white">🔍</button>
+                        </td>
+                    </tr>
+                } *@
+                </tbody>
+            </table>
+        </div>
+    </main>
 </div>
