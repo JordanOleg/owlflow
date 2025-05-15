@@ -1,0 +1,22 @@
+﻿@page "{id:guid}/{name:string}"
+@model MyApp.Namespace.EditModel
+@{
+}
+
+<h2 class="text-xl font-bold mb-4">Edit server @Model.EditServer.Name @Model.EditServer.IPAddress</h2>
+
+<form method="post" class="space-y-4">
+    <input type="hidden" asp-for="EditServer.Id" />
+
+    <div>
+        <label class="block mb-1">Name server:</label>
+        <input asp-for="EditServer.Name" class="w-full p-2 rounded text-black" />
+    </div>
+
+    <div>
+        <label class="block mb-1">IP: </label>
+        <input asp-for="EditServer.IPAddress" class="w-full p-2 rounded text-black" />
+    </div>
+
+    <button type="submit" class="bg-blue-600 px-4 py-2 rounded">Save</button>
+</form>
