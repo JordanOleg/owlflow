@@ -6,8 +6,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 
+
 //Singleton service 
 builder.Services.AddSingleton<ServiceServerRepository>(new ServiceServerRepository() { PathRepository = new FileInfo("source/OwlFlow/data/servers.json")});
+builder.Services.AddSingleton<ServiceServerRepository>();
 
 
 var app = builder.Build();
