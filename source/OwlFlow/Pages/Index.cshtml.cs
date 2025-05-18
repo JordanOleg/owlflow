@@ -13,7 +13,7 @@ public class IndexModel : PageModel
     public IndexModel(ServiceRepository serviceRepository)
     {
         Repository = serviceRepository;
-        Servers = Update();
+        Servers = serviceRepository.Servers.ToList();
     }
 
     public void OnGet()

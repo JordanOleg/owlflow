@@ -15,7 +15,8 @@ namespace OwlFlow.Service
             Servers = this.GetServers();
         }
 
-        public async Task AddServer(Server server){
+        public async Task AddServer(Server server)
+        {
             Servers.Add(server);
             await UpdateServers();
         }
@@ -26,7 +27,7 @@ namespace OwlFlow.Service
         }
         public async Task UpdateServers(){
             await new Task(() => {  
-                Repository.SaveServersAll(this.Servers);
+                Repository.Update(this.Servers);
             });
         }
         public List<Server> GetServers(){

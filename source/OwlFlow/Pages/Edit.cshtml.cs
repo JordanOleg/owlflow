@@ -13,7 +13,7 @@ namespace MyApp.Namespace
         public ServiceRepository serviceServerRepository{ get; set; }
         public EditModel(ServiceRepository serviceServerRepository){
             this.serviceServerRepository = serviceServerRepository;
-            this.Servers = serviceServerRepository.GetServers();
+            this.Servers = serviceServerRepository.Servers.ToList();
         }
         public IActionResult OnGet(Guid id, string name){
             EditServer = Servers.FirstOrDefault(s => s.Id == id && s.Name == name)!;
@@ -26,7 +26,6 @@ namespace MyApp.Namespace
         public IActionResult OnPost()
         {
             Servers.Add(EditServer);
-            serviceServerRepository.AddServer(EditServer);
             return RedirectToPage("/InfoServers");
         }
     }

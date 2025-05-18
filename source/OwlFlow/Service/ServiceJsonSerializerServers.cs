@@ -32,14 +32,20 @@ namespace OwlFlow.Service
                 return false;
             }
         }
-        public bool SaveServersAll(List<Server> servers){
+        /// <summary>
+        /// Update data 
+        /// </summary>
+        /// <param name="servers"></param>
+        /// <returns></returns>
+        public bool Update(List<Server> servers)
+        {
             try
             {
                 var json = JsonSerializer.Serialize(servers, new JsonSerializerOptions { WriteIndented = true });
                 File.WriteAllText(PathRepository.FullName, json);
                 return true;
             }
-            catch{ return false; }
+            catch { return false; }
         }
     }
 }
