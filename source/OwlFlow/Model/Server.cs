@@ -12,9 +12,10 @@ namespace OwlFlow.Model
         public string Name { get; set; }
         public bool IsConnected { get; set; }
         //public IPEndPoint iPEndPoint { get; set; }
-        public IPAddress IPAddress { get; set; }
+        public string IPAddress { get; set; }
         public int UseCPU { get; set; }
         public int UseMemory { get; set; }
         public int CountClient { get; set; }
+        public int Ping { get; set; }
     }
 }

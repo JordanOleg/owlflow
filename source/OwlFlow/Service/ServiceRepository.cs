@@ -9,27 +9,27 @@ namespace OwlFlow.Service
     public class ServiceRepository
     {
         public List<Server> Servers { get; private set; }
-        public ServiceServerRepository Repository { get; set; }
-        public ServiceRepository(ServiceServerRepository serviceServerRepository){
+        public ServiceJsonSerializerServers Repository { get; set; }
+        public ServiceRepository(ServiceJsonSerializerServers serviceServerRepository){
             Repository = serviceServerRepository;
             Servers = this.GetServers();
         }
 
-        public void AddServer(Server server){
+        public async Task AddServer(Server server){
             Servers.Add(server);
-            Task.Run(() => this.UpdateServers());
+            await UpdateServers();
         }
 
-        public void RemoveServer(Server server) {
-            Servers.Add(server);
-            Task.Run(() => this.UpdateServers());
+        public async Task RemoveServer(Server server) {
+            Servers.Remove(server);
+            await UpdateServers();
         }
         public async Task UpdateServers(){
             await new Task(() => {  
                 Repository.SaveServersAll(this.Servers);
             });
         }
-        private List<Server> GetServers(){
+        public List<Server> GetServers(){
             bool result = Repository.GetServers(out List<Server> server);
             return result ? server : new List<Server>();
         }

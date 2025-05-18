@@ -7,7 +7,7 @@ using OwlFlow.Model;
 
 namespace OwlFlow.Service
 {
-    public class ServiceServerRepository
+    public class ServiceJsonSerializerServers
     {
         public FileInfo PathRepository { get; set; }
         public bool GetServers(out List<Server> servers){

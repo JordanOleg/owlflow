@@ -8,16 +8,14 @@ namespace MyApp.Namespace
     public class InfoServersModel : PageModel
     {
         public List<Server> Servers{ get; set; }
-        public ServiceServerRepository ServerRepository{ get; set; }
-        public InfoServersModel(ServiceServerRepository serviceServerRepository){
+        public ServiceRepository ServerRepository{ get; set; }
+        public InfoServersModel(ServiceRepository serviceServerRepository){
             this.ServerRepository = serviceServerRepository;
-            this.ServerRepository.GetServers(out List<Server> servers);
-            this.Servers = servers;
+            this.Servers = this.ServerRepository.GetServers();
         }
         public void OnGet()
         {
-            ServerRepository.GetServers(out List<Server> servers);
-            this.Servers = servers;
+            this.Servers = ServerRepository.GetServers(); 
         }
     }
 }

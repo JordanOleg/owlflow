@@ -1,27 +1,70 @@
 ﻿@page
 @model MyApp.Namespace.InfoServersModel
 @{
-    
+    ViewData["title"] = "Info";
 }
-<table>
-    @if(Model.Servers == null){
-        <h2>No servers specified</h2>
-    }
-    else{
-        @foreach (var server in Model.Servers)
+<div class="text-center text-white">
+    <main class="flex-1 p-10">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-3xl font-bold">@ViewData["title"]</h2>
+            <a asp-page="/AddServer" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded transition duration-200">
+                ➕ Add Server
+            </a>
+        </div>
+
+        @if (Model.Servers == null || Model.Servers.Count == 0)
         {
-            <tr>
-                <td>@server.Name</td>
-                <td>@server.Id</td>
-                <td>@server.IPAddress</td>
-                <td>@server.IsConnected</td>
-                <td>@server.UseCPU</td>
-                <td>@server.UseMemory</td>
-                <td>@server.CountClient</td>
-                <td>
-                    <a asp-page="/EditServer" asp-route-id="@server.Id">Edit</a>
-                </td>
-            </tr>
+            <div class="bg-gray-800 text-gray-300 p-6 rounded-lg">
+                <h2 class="text-xl">No servers specified</h2>
+            </div>
         }
-    }
-</table>
+        else
+        {
+            <div class="bg-gray-800 rounded-lg overflow-x-auto shadow-lg">
+                <table class="min-w-full table-auto text-left">
+                    <thead class="bg-gray-700 text-gray-300">
+                        <tr>
+                            <th class="px-6 py-3">Name</th>
+                            <th class="px-6 py-3">Server ID</th>
+                            <th class="px-6 py-3">IP Address</th>
+                            <th class="px-6 py-3">Status</th>
+                            <th class="px-6 py-3">CPU</th>
+                            <th class="px-6 py-3">Memory</th>
+                            <th class="px-6 py-3">Clients</th>
+                            <th class="px-6 py-3 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-700">
+                    @foreach (var server in Model.Servers)
+                    {
+                        <tr class="hover:bg-gray-700 transition">
+                            <td class="px-6 py-4">@server.Name</td>
+                            <td class="px-6 py-4">@server.Id</td>
+                            <td class="px-6 py-4">@server.IPAddress</td>
+                            <td class="px-6 py-4">
+                                @if (server.IsConnected)
+                                {
+                                    <span class="text-green-400">🟢 Online</span>
+                                }
+                                else
+                                {
+                                    <span class="text-red-400">🔴 Offline</span>
+                                }
+                            </td>
+                            <td class="px-6 py-4">@(server.IsConnected ? $"{server.UseCPU}%" : "—")</td>
+                            <td class="px-6 py-4">@(server.IsConnected ? $"{server.UseMemory}%" : "—")</td>
+                            <td class="px-6 py-4">@server.CountClient</td>
+                            <td class="px-6 py-4 text-right">
+                                <a asp-page="Edit" asp-route-id="@server.Id" asp-route-name="@server.Name"
+                                   class="bg-yellow-500 hover:bg-yellow-400 text-black px-3 py-1 rounded transition duration-200">
+                                    Edit
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </main>
+</div>

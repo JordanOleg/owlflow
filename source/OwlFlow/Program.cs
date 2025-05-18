@@ -1,15 +1,19 @@
+using System.Text.Json;
 using OwlFlow.Model;
 using OwlFlow.Service;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 
-
+var serviceServerRepository = new ServiceJsonSerializerServers() { PathRepository = new FileInfo("wwwroot\\data\\servers.json") };
+var serviceRepo = new ServiceRepository(serviceServerRepository);
+var servers = serviceRepo.GetServers();
 //Singleton service 
-builder.Services.AddSingleton<ServiceServerRepository>(new ServiceServerRepository() { PathRepository = new FileInfo("source/OwlFlow/data/servers.json")});
-builder.Services.AddSingleton<ServiceServerRepository>();
+builder.Services.AddSingleton<ServiceJsonSerializerServers>(serviceServerRepository);
+builder.Services.AddSingleton<ServiceRepository>(serviceRepo);
 
 
 var app = builder.Build();

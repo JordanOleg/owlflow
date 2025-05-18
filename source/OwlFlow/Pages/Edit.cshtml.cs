@@ -10,24 +10,24 @@ namespace MyApp.Namespace
         [BindProperty]
         public Server EditServer{ get; set; }
         public List<Server> Servers{ get; set; }
-        public ServiceServerRepository serviceServerRepository{ get; set; }
-        public EditModel(ServiceServerRepository serviceServerRepository){
+        public ServiceRepository serviceServerRepository{ get; set; }
+        public EditModel(ServiceRepository serviceServerRepository){
             this.serviceServerRepository = serviceServerRepository;
-            this.serviceServerRepository.GetServers(out List<Server> servers);
-            this.Servers = servers;
+            this.Servers = serviceServerRepository.GetServers();
         }
-        public IActionResult OnGet(Guid guid, string name){
-            EditServer = Servers.FirstOrDefault(s => s.Id == guid && s.Name == name)!;
+        public IActionResult OnGet(Guid id, string name){
+            EditServer = Servers.FirstOrDefault(s => s.Id == id && s.Name == name)!;
             Servers.Remove(EditServer);
             if (EditServer == null){
                 return NotFound();
             }
             return Page();
         }
-        public void OnPost()
+        public IActionResult OnPost()
         {
             Servers.Add(EditServer);
-            serviceServerRepository.SaveServersAll(Servers);
+            serviceServerRepository.AddServer(EditServer);
+            return RedirectToPage("/InfoServers");
         }
     }
 }

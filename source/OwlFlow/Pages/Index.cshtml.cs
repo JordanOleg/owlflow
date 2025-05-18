@@ -1,19 +1,27 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using OwlFlow.Model;
+using OwlFlow.Service;
 
 namespace OwlFlow.Pages;
 
 public class IndexModel : PageModel
 {
-    private readonly ILogger<IndexModel> _logger;
+    public List<Server> Servers { get; set; }
+    public ServiceRepository Repository { get; set; }
 
-    public IndexModel(ILogger<IndexModel> logger)
+    public IndexModel(ServiceRepository serviceRepository)
     {
-        _logger = logger;
+        Repository = serviceRepository;
+        Servers = Update();
     }
 
     public void OnGet()
     {
-
+        Servers = Update();
+    }
+    public List<Server> Update()
+    {
+        return Servers = Repository.GetServers();
     }
 }
