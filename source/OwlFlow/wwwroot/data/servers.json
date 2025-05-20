@@ -1,29 +1,54 @@
 [
-    {
-        "Id": "f4ab9d17-72a6-4835-a2c5-09e01a008c6e",
-        "Name": "sr1",
-        "IsConnected": false,
-        "IPAddress": "255.25.15.5:5000",
-        "UseCPU": 0,
-        "UseMemory": 0,
-        "CountClient": 0
-    },
-    {
-        "Id": "403ccf9d-be64-4b44-b5f5-b1b241787c70",
-        "Name": "sr2",
-        "IsConnected": false,
-        "IPAddress": "123.9.45.5:856",
-        "UseCPU": 0,
-        "UseMemory": 0,
-        "CountClient": 0
-    },
-    {
-        "Id": "1994a805-73da-4f15-9615-bf254042895f",
-        "Name": "root_2",
-        "IsConnected": false,
-        "IPAddress": "222.90.56.5:345",
-        "UseCPU": 0,
-        "UseMemory": 0,
-        "CountClient": 0
-    }
+  {
+    "Id": "f4ab9d17-72a6-4835-a2c5-09e01a008c6e",
+    "Name": "sr1",
+    "IsConnected": false,
+    "IPAddress": "255.25.15.5:5000",
+    "UseCPU": 0,
+    "UseMemory": 0,
+    "CountClient": 0,
+    "Ping": 0,
+    "MaxCapacityPeoples": 0,
+    "CountAllRequestUser": 0,
+    "OverloadingPermission": false
+  },
+  {
+    "Id": "403ccf9d-be64-4b44-b5f5-b1b241787c70",
+    "Name": "sr2",
+    "IsConnected": false,
+    "IPAddress": "123.9.45.5:856",
+    "UseCPU": 0,
+    "UseMemory": 0,
+    "CountClient": 0,
+    "Ping": 0,
+    "MaxCapacityPeoples": 0,
+    "CountAllRequestUser": 0,
+    "OverloadingPermission": false
+  },
+  {
+    "Id": "1994a805-73da-4f15-9615-bf254042895f",
+    "Name": "root_2",
+    "IsConnected": false,
+    "IPAddress": "222.90.56.5:345",
+    "UseCPU": 0,
+    "UseMemory": 0,
+    "CountClient": 0,
+    "Ping": 0,
+    "MaxCapacityPeoples": 0,
+    "CountAllRequestUser": 0,
+    "OverloadingPermission": false
+  },
+  {
+    "Id": "1994a805-73da-4f15-9615-bf254042895f",
+    "Name": "root_80",
+    "IsConnected": false,
+    "IPAddress": "222.90.56.5:850",
+    "UseCPU": 0,
+    "UseMemory": 0,
+    "CountClient": 0,
+    "Ping": 0,
+    "MaxCapacityPeoples": 0,
+    "CountAllRequestUser": 0,
+    "OverloadingPermission": false
+  }
 ]

@@ -1,5 +1,5 @@
 using System.Text.Json;
-using OwlFlow.Model;
+using OwlFlow.Models;
 using OwlFlow.Service;
 
 
@@ -11,10 +11,10 @@ builder.Services.AddRazorPages();
 var serviceServerRepository = new ServiceJsonSerializerServers() { PathRepository = new FileInfo("wwwroot\\data\\servers.json") };
 var serviceRepo = new ServiceRepository(serviceServerRepository);
 var servers = serviceRepo.GetServers();
-//Singleton service 
+//Service 
 builder.Services.AddSingleton<ServiceJsonSerializerServers>(serviceServerRepository);
 builder.Services.AddSingleton<ServiceRepository>(serviceRepo);
-
+//builder.Services.AddHostedService<ServiceServersChecker>();
 
 var app = builder.Build();
 

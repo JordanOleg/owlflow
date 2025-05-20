@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using OwlFlow.Model;
+using OwlFlow.Models;
 using OwlFlow.Service;
 
 namespace MyApp.Namespace

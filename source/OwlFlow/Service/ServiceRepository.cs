@@ -2,31 +2,20 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using OwlFlow.Model;
+using OwlFlow.Models;
 
 namespace OwlFlow.Service
 {
     public class ServiceRepository
     {
-        public List<Server> Servers { get; private set; }
+        public List<Server> Servers { get; set; }
         public ServiceJsonSerializerServers Repository { get; set; }
         public ServiceRepository(ServiceJsonSerializerServers serviceServerRepository){
             Repository = serviceServerRepository;
             Servers = this.GetServers();
         }
-
-        public async Task AddServer(Server server)
-        {
-            Servers.Add(server);
-            await UpdateServers();
-        }
-
-        public async Task RemoveServer(Server server) {
-            Servers.Remove(server);
-            await UpdateServers();
-        }
         public async Task UpdateServers(){
-            await new Task(() => {  
+            await Task.Run(() => {  
                 Repository.Update(this.Servers);
             });
         }

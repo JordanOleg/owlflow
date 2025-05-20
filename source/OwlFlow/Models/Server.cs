@@ -4,7 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace OwlFlow.Model
+namespace OwlFlow.Models
 {
     public class Server
     {
@@ -17,5 +17,8 @@ namespace OwlFlow.Model
         public int UseMemory { get; set; }
         public int CountClient { get; set; }
         public int Ping { get; set; }
+        public int MaxCapacityPeoples { get; set; }
+        public int CountAllRequestUser { get; set; }
+        public bool OverloadingPermission { get; set; }
     }
 }

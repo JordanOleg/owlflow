@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using OwlFlow.Model;
+using OwlFlow.Models;
 using OwlFlow.Service;
 
 namespace MyApp.Namespace
@@ -9,23 +9,27 @@ namespace MyApp.Namespace
     {
         [BindProperty]
         public Server EditServer{ get; set; }
-        public List<Server> Servers{ get; set; }
-        public ServiceRepository serviceServerRepository{ get; set; }
-        public EditModel(ServiceRepository serviceServerRepository){
-            this.serviceServerRepository = serviceServerRepository;
-            this.Servers = serviceServerRepository.Servers.ToList();
+        private Server _editObjectOfRef;
+        private ServiceRepository _serviceServerRepository;
+        public EditModel(ServiceRepository serviceServerRepository)
+        {
+            this._serviceServerRepository = serviceServerRepository;
         }
-        public IActionResult OnGet(Guid id, string name){
-            EditServer = Servers.FirstOrDefault(s => s.Id == id && s.Name == name)!;
-            Servers.Remove(EditServer);
-            if (EditServer == null){
+        public IActionResult OnGet(Guid id, string name)
+        {
+            EditServer = _serviceServerRepository.Servers.First(s => s.Id == id && s.Name == name)!;
+            _editObjectOfRef = EditServer;
+            if (_editObjectOfRef == null)
+            {
                 return NotFound();
             }
             return Page();
         }
-        public IActionResult OnPost()
+        public async Task<IActionResult> OnPost()
         {
-            Servers.Add(EditServer);
+            _serviceServerRepository.Servers.Remove(_editObjectOfRef);
+            _serviceServerRepository.Servers.Add(EditServer);
+            await _serviceServerRepository.UpdateServers();
             return RedirectToPage("/InfoServers");
         }
     }

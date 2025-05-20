@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using OwlFlow.Model;
+using OwlFlow.Models;
 using OwlFlow.Service;
 
 namespace OwlFlow.Pages;
@@ -13,12 +13,12 @@ public class IndexModel : PageModel
     public IndexModel(ServiceRepository serviceRepository)
     {
         Repository = serviceRepository;
-        Servers = serviceRepository.Servers.ToList();
+        Servers = serviceRepository.Servers;
     }
 
     public void OnGet()
     {
-        Servers = Update();
+        //Servers = Update();
     }
     public List<Server> Update()
     {
