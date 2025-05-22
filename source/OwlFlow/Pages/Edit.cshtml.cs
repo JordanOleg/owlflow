@@ -9,7 +9,6 @@ namespace MyApp.Namespace
     {
         [BindProperty]
         public Server EditServer{ get; set; }
-        private Server _editObjectOfRef;
         private ServiceRepository _serviceServerRepository;
         public EditModel(ServiceRepository serviceServerRepository)
         {
@@ -18,8 +17,7 @@ namespace MyApp.Namespace
         public IActionResult OnGet(Guid id, string name)
         {
             EditServer = _serviceServerRepository.Servers.First(s => s.Id == id && s.Name == name)!;
-            _editObjectOfRef = EditServer;
-            if (_editObjectOfRef == null)
+            if (EditServer == null)
             {
                 return NotFound();
             }
@@ -27,7 +25,8 @@ namespace MyApp.Namespace
         }
         public async Task<IActionResult> OnPost()
         {
-            _serviceServerRepository.Servers.Remove(_editObjectOfRef);
+            Server record = _serviceServerRepository.Servers.First(s => s.Id == EditServer.Id);
+            _serviceServerRepository.Servers.Remove(record);
             _serviceServerRepository.Servers.Add(EditServer);
             await _serviceServerRepository.UpdateServers();
             return RedirectToPage("/InfoServers");

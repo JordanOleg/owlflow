@@ -18,7 +18,7 @@ public class IndexModel : PageModel
 
     public void OnGet()
     {
-        //Servers = Update();
+        
     }
     public List<Server> Update()
     {

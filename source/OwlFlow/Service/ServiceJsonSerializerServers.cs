@@ -41,6 +41,7 @@ namespace OwlFlow.Service
         {
             try
             {
+                File.WriteAllText(PathRepository.FullName ,string.Empty);
                 var json = JsonSerializer.Serialize(servers, new JsonSerializerOptions { WriteIndented = true });
                 File.WriteAllText(PathRepository.FullName, json);
                 return true;
