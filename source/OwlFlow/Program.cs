@@ -1,6 +1,8 @@
 using System.Text.Json;
 using OwlFlow.Models;
 using OwlFlow.Service;
+using OwlFlow.Service.Background;
+using OwlFlow.Middleware;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,6 +20,7 @@ builder.Services.AddSingleton<ServiceRepository>(serviceRepo);
 
 var app = builder.Build();
 
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -26,6 +29,8 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseRedirectRequestMiddleware(); // Custom Redirect request Middleware
 
 app.UseRouting();
 

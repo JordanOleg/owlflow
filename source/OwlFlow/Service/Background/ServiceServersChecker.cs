@@ -7,7 +7,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using OwlFlow.Models;
 
-namespace OwlFlow.Service
+namespace OwlFlow.Service.Background
 {
     public class ServiceServersChecker : BackgroundService
     {
@@ -64,35 +64,38 @@ namespace OwlFlow.Service
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                if (_serviceRepository.Servers != null || _serviceRepository.Servers.Count != 0)
+                try
                 {
-                    _parsesServer = new ConcurrentBag<Server>();
-                    ParallelLoopResult loopResult =
-                    Parallel.ForEach(_serviceRepository.Servers, async (server) =>
+                    if (_serviceRepository.Servers != null && _serviceRepository.Servers.Count > 0)
                     {
-                        using (HttpClient client = new HttpClient())
+                        var tasks = new List<Task>();
+                        _parsesServer = new ConcurrentBag<Server>();
+                        foreach (Server server in _serviceRepository.Servers)
                         {
-                            Uri.TryCreate($"{server.IPAddress}/heathChecked", UriKind.RelativeOrAbsolute, out Uri? uri);
-                            if (uri == null)
+                            tasks.Add(Task.Run(async () =>
                             {
-                                _logger.LogWarning($"{uri} uri can`t create uri for ${server.Name}:{server.Id}");
-                            }
-                            bool result = await this.RequestChecked(client, uri!, stoppingToken);
-                            if (!result)
-                            {
-                                _logger.LogWarning($"{server.Name}:{server.IPAddress} does not respond");
-                            }
-                            Interlocked.And(ref _countInterlockedRequest, 1);
+                                using (HttpClient client = new HttpClient())
+                                {
+                                    Uri.TryCreate($"{server.IPAddress}/heathChecked", UriKind.RelativeOrAbsolute, out Uri? uri);
+                                    if (uri == null)
+                                    {
+                                        _logger.LogWarning($"{uri} uri can`t create uri for ${server.Name}:{server.Id}");
+                                    }
+                                    bool result = await this.RequestChecked(client, uri!, stoppingToken);
+                                    if (!result)
+                                    {
+                                        _logger.LogWarning($"{server.Name}:{server.IPAddress} does not respond");
+                                    }
+                                    Interlocked.Increment(ref _countInterlockedRequest);
+                                }
+                            }));
                         }
-                    });
-                    if (!loopResult.IsCompleted)
-                    {
-                        _logger.LogInformation("Not all completed request checked");
+                        await Task.WhenAll(tasks);
                     }
-                    else
-                    {
-                        _serviceRepository.Servers = _parsesServer.ToList();
-                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex.Message, "ServiceChecker");
                 }
                 // TODO: try used PeriodicTimer 
                 await Task.Delay(TimeSpan.FromSeconds(60), stoppingToken);
