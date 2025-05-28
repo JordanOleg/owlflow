@@ -2,13 +2,20 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using OwlFlow.Models;
 using OwlFlow.Service;
+using OwlFlow.Tools;
 
 namespace MyApp.Namespace
 {
+    [IgnoreAntiforgeryToken]
     public class EditModel : PageModel
     {
+        public class RequestIPAddress
+        {
+            public string IP { get; set;}
+        }
+
         [BindProperty]
-        public Server EditServer{ get; set; }
+        public Server EditServer { get; set; }
         private ServiceRepository _serviceServerRepository;
         public EditModel(ServiceRepository serviceServerRepository)
         {
@@ -30,6 +37,11 @@ namespace MyApp.Namespace
             _serviceServerRepository.Servers.Add(EditServer);
             await _serviceServerRepository.UpdateServers();
             return RedirectToPage("/InfoServers");
+        }
+        public async Task<IActionResult> OnGetTryConnection([FromBody] RequestIPAddress requestIP)
+        {
+            bool result = await NetworkToolsServer.PingIp(requestIP.IP);
+            return new JsonResult(new { success = result });
         }
     }
 }

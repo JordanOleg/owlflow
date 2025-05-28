@@ -20,9 +20,9 @@
         <div>
             <label asp-for="EditServer.IPAddress" class="block text-gray-300 mb-1">IP Address:</label>
             <div class="flex gap-2">
-                <input asp-for="EditServer.IPAddress"
+                <input id="ipInput" asp-for="EditServer.IPAddress"
                        class="flex-grow p-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                <button type="button"
+                <button id="tryConnectBtn" type="button" onclick="tryConnect()"
                         class="bg-yellow-500 hover:bg-yellow-400 text-black px-4 py-2 rounded transition duration-200">
                     Try to connect
                 </button>
@@ -38,3 +38,41 @@
         </div>
     </form>
 </div>
+<script>
+     async function tryConnect() {
+        const ip = document.getElementById('ipInput').value;
+        const button = document.getElementById('tryConnectBtn');
+
+        button.classList.remove('bg-green-500', 'bg-red-500');
+        button.classList.add('bg-yellow-500');
+        button.textContent = 'Trying...';
+
+        try {
+            const response = await fetch(`?handler=TryConnection`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ ip })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                button.classList.remove('bg-yellow-500');
+                button.classList.add('bg-green-500');
+                button.textContent = 'Success!';
+            } else {
+                button.classList.remove('bg-yellow-500');
+                button.classList.add('bg-red-500');
+                button.textContent = 'Failed';
+            }
+
+        } catch (error) {
+            console.error(error);
+            button.classList.remove('bg-yellow-500');
+            button.classList.add('bg-red-500');
+            button.textContent = 'Error';
+        }
+    }
+</script>
