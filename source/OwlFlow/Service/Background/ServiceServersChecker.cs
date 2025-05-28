@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Text.Json;
+using System.Text.Json.Serialization.Metadata;
 using System.Threading.Tasks;
 using OwlFlow.Models;
 
@@ -20,6 +22,7 @@ namespace OwlFlow.Service.Background
         private ILogger<ServiceServersChecker> _logger;
         private ServiceRepository _serviceRepository;
         private ConcurrentBag<Server> _parsesServer;
+        private ConcurrentQueue<Server> _failedRequestServer;
         private int _countInterlockedRequest;
         public int CountRequest { get { return _countInterlockedRequest; } }
         public ServiceServersChecker(ILogger<ServiceServersChecker> logger, ServiceRepository serviceRepository)
@@ -27,27 +30,22 @@ namespace OwlFlow.Service.Background
             _serviceRepository = serviceRepository;
             this._logger = logger;
         }
-        private bool ParseHeaders(HttpResponseHeaders httpHeaders)
+        private bool DeserializeJson(HttpResponseMessage httpResponse, Server server)
         {
-            Server server = new Server();
             try
             {
-                string ping = httpHeaders.GetValues("Ping").First();
-                server.Ping = int.Parse(ping);
-                string countOnline = httpHeaders.GetValues("CountOnline").First();
-                server.CountClient = int.Parse(countOnline);
-                string useCPU = httpHeaders.GetValues("UseCPU").First();
-                server.UseCPU = int.Parse(useCPU);
-                string useMemory = httpHeaders.GetValues("UseMemory").First();
-                server.UseMemory = int.Parse(useMemory);
-                string countRequest = httpHeaders.GetValues("CountAllRequestUser").First();
-                server.CountAllRequestUser = int.Parse(countRequest);
-                string maxCapacityPeople = httpHeaders.GetValues("MaxCapacityPeople").First();
-                server.MaxCapacityPeoples = int.Parse(maxCapacityPeople);
-                string overloading = httpHeaders.GetValues("OverloadingPermission").First();
-                server.OverloadingPermission = bool.Parse(overloading);
-                _parsesServer.Add(server);
-                return true;
+                using Stream stream = httpResponse.Content.ReadAsStream();
+                Server tryDeserialyze = (Server)JsonSerializer.Deserialize(stream,
+                        JsonTypeInfo.CreateJsonTypeInfo(typeof(Server), JsonSerializerOptions.Web))!;
+                if (tryDeserialyze != null)
+                {
+                    tryDeserialyze.Id = server.Id;
+                    tryDeserialyze.Name = server.Name;
+                    tryDeserialyze.IsConnected = true;
+                    _parsesServer.Add(tryDeserialyze);
+                    return true;
+                }
+                return false;
             }
             catch (Exception ex)
             {
@@ -55,10 +53,10 @@ namespace OwlFlow.Service.Background
                 return false;
             }
         }
-        private async Task<bool> RequestChecked(HttpClient httpClient, Uri uri, CancellationToken cancellationToken)
+        private async Task<bool> RequestChecked(HttpClient httpClient, Server server, Uri uri, CancellationToken cancellationToken)
         {
             HttpResponseMessage response = await httpClient.GetAsync(uri, cancellationToken);
-            return ParseHeaders(response.Headers);
+            return DeserializeJson(response, server);
         }
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
@@ -68,6 +66,7 @@ namespace OwlFlow.Service.Background
                 {
                     if (_serviceRepository.Servers != null && _serviceRepository.Servers.Count > 0)
                     {
+                        _failedRequestServer = new ConcurrentQueue<Server>();
                         var tasks = new List<Task>();
                         _parsesServer = new ConcurrentBag<Server>();
                         foreach (Server server in _serviceRepository.Servers)
@@ -81,21 +80,30 @@ namespace OwlFlow.Service.Background
                                     {
                                         _logger.LogWarning($"{uri} uri can`t create uri for ${server.Name}:{server.Id}");
                                     }
-                                    bool result = await this.RequestChecked(client, uri!, stoppingToken);
-                                    if (!result)
-                                    {
-                                        _logger.LogWarning($"{server.Name}:{server.IPAddress} does not respond");
-                                    }
+                                    await this.RequestChecked(client, server, uri!, stoppingToken)
+                                                .ContinueWith((task) =>
+                                                {
+                                                    _failedRequestServer.Enqueue(server);
+                                                }, stoppingToken, TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.Current);
                                     Interlocked.Increment(ref _countInterlockedRequest);
                                 }
                             }));
                         }
                         await Task.WhenAll(tasks);
+                        if (_failedRequestServer != null && _failedRequestServer.Count > 0)
+                        {
+                            foreach (Server server in _failedRequestServer)
+                            {
+                                server.ResetProperty();
+                                _parsesServer.Add(server);
+                            }
+                        }
+                        _serviceRepository.Servers = _parsesServer.ToList();
                     }
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex.Message, "ServiceChecker");
+                    _logger.LogError(ex.ToString());
                 }
                 // TODO: try used PeriodicTimer 
                 await Task.Delay(TimeSpan.FromSeconds(60), stoppingToken);

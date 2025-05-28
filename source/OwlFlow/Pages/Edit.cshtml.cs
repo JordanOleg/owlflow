@@ -11,7 +11,7 @@ namespace MyApp.Namespace
     {
         public class RequestIPAddress
         {
-            public string IP { get; set;}
+            public string IP { get; set; }
         }
 
         [BindProperty]

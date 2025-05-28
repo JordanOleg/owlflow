@@ -16,7 +16,8 @@ var servers = serviceRepo.GetServers();
 //Service 
 builder.Services.AddSingleton<ServiceJsonSerializerServers>(serviceServerRepository);
 builder.Services.AddSingleton<ServiceRepository>(serviceRepo);
-//builder.Services.AddHostedService<ServiceServersChecker>();
+builder.Services.AddSingleton<ServiceSelectServer>();
+builder.Services.AddHostedService<ServiceServersChecker>();
 
 var app = builder.Build();
 
