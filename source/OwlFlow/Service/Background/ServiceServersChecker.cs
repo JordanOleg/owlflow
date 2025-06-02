@@ -55,8 +55,17 @@ namespace OwlFlow.Service.Background
         }
         private async Task<bool> RequestChecked(HttpClient httpClient, Server server, Uri uri, CancellationToken cancellationToken)
         {
+            int countReq = 0;
+            Request:
             HttpResponseMessage response = await httpClient.GetAsync(uri, cancellationToken);
-            return DeserializeJson(response, server);
+            if (response.StatusCode == HttpStatusCode.OK)
+                return DeserializeJson(response, server);
+            else if (countReq > 0 && 2 < countReq)
+            {
+                await Task.Delay(15);
+                goto Request;
+            }
+            else return false;
         }
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {

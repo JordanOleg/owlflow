@@ -32,6 +32,10 @@ namespace MyApp.Namespace
         }
         public async Task<IActionResult> OnPost()
         {
+            if (!ModelState.IsValid)
+            {
+                return Page();
+            }
             Server record = _serviceServerRepository.Servers.First(s => s.Id == EditServer.Id);
             _serviceServerRepository.Servers.Remove(record);
             _serviceServerRepository.Servers.Add(EditServer);

@@ -17,7 +17,7 @@ var servers = serviceRepo.GetServers();
 builder.Services.AddSingleton<ServiceJsonSerializerServers>(serviceServerRepository);
 builder.Services.AddSingleton<ServiceRepository>(serviceRepo);
 builder.Services.AddSingleton<ServiceSelectServer>();
-builder.Services.AddHostedService<ServiceServersChecker>();
+//builder.Services.AddHostedService<ServiceServersChecker>();
 
 var app = builder.Build();
 
@@ -31,7 +31,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseRedirectRequestMiddleware(); // Custom Redirect request Middleware
+//app.UseRedirectRequestMiddleware(); // Custom Redirect request Middleware
 
 app.UseRouting();
 
