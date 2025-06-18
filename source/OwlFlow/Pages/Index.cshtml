@@ -11,8 +11,7 @@
             <h2 class="text-3xl font-bold">@ViewData["title"]</h2>
             <a asp-page="/AddServer" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded">➕ Add Server</a>
         </div>
-
-        <div class="bg-gray-800 rounded-lg overflow-hidden">
+        <div class="bg-gray-800 rounded-lg overflow-x-auto shadow-lg">
             <table class="min-w-full table-auto text-left">
                 <thead class="bg-gray-700 text-gray-300">
                     <tr>
@@ -25,8 +24,10 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-700">
-                @foreach (var server in Model.Servers)
+                @if (Model.Servers != null && Model.Servers.Count != 0)
                 {
+                    @foreach (var server in Model.Servers)
+                    {
                     <tr>
                         <td class="px-6 py-4">@server.Id</td>
                         <td class="px-6 py-4">@server.IPAddress</td>
@@ -45,6 +46,15 @@
                         <td class="px-6 py-4 flex items-center justify-between">
                             @(server.IsConnected ? $"{server.UseMemory}%" : "—")
                             <button class="ml-2 text-gray-400 hover:text-white">🔍</button>
+                        </td>
+                    </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6" class="px-6 py-4 text-center text-gray-400">
+                            No servers found. Please add server 
                         </td>
                     </tr>
                 }

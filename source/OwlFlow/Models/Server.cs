@@ -38,7 +38,7 @@ namespace OwlFlow.Models
         public int? Ping { get; set; }
 
         [JsonPropertyName("maxCapacityPeoples")]
-        public int? MaxCapacityPeoples { get; set; }
+        public int? MaxCapacityClient { get; set; }
 
         [JsonPropertyName("countAllRequestUser")]
         public int? CountAllRequestUser { get; set; }
@@ -56,7 +56,7 @@ namespace OwlFlow.Models
             this.UseMemory = 0;
             this.CountClient = 0;
             this.Ping = 0;
-            this.MaxCapacityPeoples = 0;
+            this.MaxCapacityClient = 0;
             this.CountAllRequestUser = 0;
         }
     }

@@ -20,7 +20,7 @@ namespace OwlFlow.Service
             return servers
                         .Where(x => x.UseCPU <= 85)
                         .Where(x => x.UseMemory <= 85)
-                        .Where(x => x.MaxCapacityPeoples >= x.CountClient)
+                        .Where(x => x.MaxCapacityClient >= x.CountClient)
                         .First();
         }
     }
