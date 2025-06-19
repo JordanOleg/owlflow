@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Net.NetworkInformation;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 using System.Threading.Tasks;
@@ -30,19 +31,29 @@ namespace OwlFlow.Service.Background
             _serviceRepository = serviceRepository;
             this._logger = logger;
         }
+        private void Initialize(Server server, RemoteDataServer remoteDataServer)
+        {
+            server.UseCPU = remoteDataServer.UseCPU;
+            server.UseMemory = remoteDataServer.UseMemory;
+            server.MaxCapacityClient = remoteDataServer.MaxCapacityClient;
+            server.CountClient = remoteDataServer.CountClient;
+            server.CountAllRequestUser = remoteDataServer.CountAllRequestUser;
+        }
         private bool DeserializeJson(HttpResponseMessage httpResponse, Server server)
         {
             try
             {
                 using Stream stream = httpResponse.Content.ReadAsStream();
-                Server tryDeserialyze = (Server)JsonSerializer.Deserialize(stream,
-                        JsonTypeInfo.CreateJsonTypeInfo(typeof(Server), JsonSerializerOptions.Web))!;
+                RemoteDataServer tryDeserialyze = (RemoteDataServer)JsonSerializer.Deserialize(stream,
+                        JsonTypeInfo.CreateJsonTypeInfo(typeof(RemoteDataServer), JsonSerializerOptions.Web))!;
                 if (tryDeserialyze != null)
                 {
-                    tryDeserialyze.Id = server.Id;
+                    Initialize(server, tryDeserialyze);
+                    server.IsConnected = true;
+                    /* tryDeserialyze.Id = server.Id;
                     tryDeserialyze.Name = server.Name;
                     tryDeserialyze.IsConnected = true;
-                    _parsesServer.Add(tryDeserialyze);
+                    _parsesServer.Add(tryDeserialyze); */
                     return true;
                 }
                 return false;
@@ -56,10 +67,14 @@ namespace OwlFlow.Service.Background
         private async Task<bool> RequestChecked(HttpClient httpClient, Server server, Uri uri, CancellationToken cancellationToken)
         {
             int countReq = 0;
-            Request:
+        Request:
             HttpResponseMessage response = await httpClient.GetAsync(uri, cancellationToken);
-            if (response.StatusCode == HttpStatusCode.OK)
+            if (response.StatusCode == HttpStatusCode.OK) {
+                Ping pingClass = new Ping();        
+                PingReply pingReply = pingClass.Send(uri.ToString(), 200);
+                server.Ping = pingReply.RoundtripTime;
                 return DeserializeJson(response, server);
+            }
             else if (countReq > 0 && 2 < countReq)
             {
                 await Task.Delay(15);
@@ -84,7 +99,7 @@ namespace OwlFlow.Service.Background
                             {
                                 using (HttpClient client = new HttpClient())
                                 {
-                                    Uri.TryCreate($"{server.IPAddress}/heathChecked", UriKind.RelativeOrAbsolute, out Uri? uri);
+                                    Uri.TryCreate($"{server.IPAddress}/health", UriKind.RelativeOrAbsolute, out Uri? uri);
                                     if (uri == null)
                                     {
                                         _logger.LogWarning($"{uri} uri can`t create uri for ${server.Name}:{server.Id}");

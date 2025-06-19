@@ -21,8 +21,8 @@ namespace OwlFlow.Models
         public bool IsConnected { get; set; }
         //public IPEndPoint iPEndPoint { get; set; }
         [Required]
-        [RegularExpression(@"^(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$",
-                    ErrorMessage = "Invalid IPv4 address format")]
+        [RegularExpression(@"^(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.){3}(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d):(6553[0-5]|655[0-2]\d|65[0-4]\d{2}|6[0-4]\d{3}|[1-5]\d{4}|[1-9]\d{1,3}|[1-9])$",
+                    ErrorMessage = "Invalid IPv4 address:port format")]
         public string? IPAddress { get; set; }
 
         [Range(0, 100)]
@@ -35,7 +35,7 @@ namespace OwlFlow.Models
 
         [JsonPropertyName("countClient")]
         public int? CountClient { get; set; }
-        public int? Ping { get; set; }
+        public long? Ping { get; set; }
 
         [JsonPropertyName("maxCapacityPeoples")]
         public int? MaxCapacityClient { get; set; }

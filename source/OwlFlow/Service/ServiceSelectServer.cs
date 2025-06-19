@@ -16,12 +16,26 @@ namespace OwlFlow.Service
         public Server GetOptimalServer()
         {
             List<Server> servers = serviceRepository.Servers;
-            
-            return servers
+            if (servers != null && servers.Count > 0)
+            {
+                List<Server> connect = servers.Where(x => x.IsConnected == true).ToList();
+                if (connect.Count > 0)
+                {
+                    if (connect.Count == 1)
+                    {
+                        return connect[0];
+                    }
+                    return connect[Random.Shared.Next(0, connect.Count)];
+                }
+                else return null;
+            }
+            else return null;
+            /* return servers
                         .Where(x => x.UseCPU <= 85)
                         .Where(x => x.UseMemory <= 85)
                         .Where(x => x.MaxCapacityClient >= x.CountClient)
-                        .First();
+                        .First(); */
+
         }
     }
 }
