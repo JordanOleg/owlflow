@@ -12,6 +12,8 @@ namespace MyApp.Namespace
 
         [BindProperty]
         public Server EditServer { get; set; }
+        [BindProperty]
+        public bool IsChecked { get; set; }
         private ServiceRepository _serviceServerRepository;
         public EditModel(ServiceRepository serviceServerRepository)
         {
@@ -34,6 +36,7 @@ namespace MyApp.Namespace
             }
             Server record = _serviceServerRepository.Servers.First(s => s.Id == EditServer.Id);
             _serviceServerRepository.Servers.Remove(record);
+            EditServer.IsConnected = IsChecked;
             _serviceServerRepository.Servers.Add(EditServer);
             await _serviceServerRepository.UpdateServers();
             return RedirectToPage("/InfoServers");

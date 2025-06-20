@@ -18,7 +18,7 @@ namespace MyApp.Namespace
         }
         public void OnGet()
         {
-
+            Servers = _serverRepository.GetServers();
         }
         public async Task<IActionResult> OnPostDelete(Guid id, string name)
         {

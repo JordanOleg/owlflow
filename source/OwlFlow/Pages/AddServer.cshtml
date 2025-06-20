@@ -8,7 +8,7 @@
 
     <form method="post" class="space-y-6">
         <input type="hidden" asp-for="AddServer.Id" value="@Guid.NewGuid()"/>
-
+        <input type="hidden" id="IsChecked" asp-for="IsChecked" value="false" />
         <!-- Name -->
         <div>
             <label asp-for="AddServer.Name" class="block text-gray-300 mb-1">Name:</label>
@@ -44,7 +44,7 @@
     async function tryConnect() {
         const ip = document.getElementById('ipInput').value;
         const button = document.getElementById('tryConnectBtn');
-
+        
         button.classList.remove('bg-green-500', 'bg-red-500');
         button.classList.add('bg-yellow-500');
         button.textContent = 'Trying...';
@@ -64,10 +64,12 @@
                 button.classList.remove('bg-yellow-500');
                 button.classList.add('bg-green-500');
                 button.textContent = 'Success!';
+                document.getElementById('IsChecked').value = 'true';
             } else {
                 button.classList.remove('bg-yellow-500');
                 button.classList.add('bg-red-500');
                 button.textContent = 'Failed';
+                document.getElementById('IsChecked').value = 'false';
             }
 
         } catch (error) {

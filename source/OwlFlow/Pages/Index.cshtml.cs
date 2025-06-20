@@ -18,10 +18,10 @@ public class IndexModel : PageModel
 
     public void OnGet()
     {
-        
+        Update();
     }
-    public List<Server> Update()
+    public void Update()
     {
-        return Servers = Repository.GetServers();
+        Servers = Repository.GetServers();
     }
 }

@@ -17,6 +17,9 @@ namespace MyApp.Namespace
         private readonly ServiceRepository _repository;
 
         [BindProperty]
+        public bool IsChecked { get; set; }
+
+        [BindProperty]
         public Server AddServer { get; set; }
         public AddServerModel(ServiceRepository repository)
         {
@@ -34,7 +37,7 @@ namespace MyApp.Namespace
             {
                 return Page();
             }
-            AddServer.IsConnected = TempData["result"] as bool? ?? false;
+            AddServer.IsConnected = IsChecked;
             _repository.Servers.Add(AddServer);
             await _repository.UpdateServers();
             return RedirectToPage("Index");

@@ -8,8 +8,8 @@
 
     <form method="post" class="space-y-6">
         <input type="hidden" asp-for="EditServer.Id" />
+        <input type="hidden" id="IsChecked" asp-for="IsChecked" value="false" />
 
-        <!-- Name -->
         <div>
             <label asp-for="EditServer.Name" class="block text-gray-300 mb-1">Name:</label>
             <input asp-for="EditServer.Name"
@@ -67,10 +67,12 @@
                 button.classList.remove('bg-yellow-500');
                 button.classList.add('bg-green-500');
                 button.textContent = 'Success!';
+                document.getElementById('IsChecked').value = 'true';
             } else {
                 button.classList.remove('bg-yellow-500');
                 button.classList.add('bg-red-500');
                 button.textContent = 'Failed';
+                document.getElementById('IsChecked').value = 'false';
             }
 
         } catch (error) {
