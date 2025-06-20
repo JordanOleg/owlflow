@@ -8,11 +8,15 @@ namespace OwlFlow.Tools
 {
     public static class NetworkToolsServer
     {
-        public static async Task<bool> PingIp(string ip)
+        public static async Task<bool> PingIp(string ipUri)
         {
-            PingReply result = await new Ping().SendPingAsync(ip);
-            if (result.Status == IPStatus.Success)
+            Uri.TryCreate($"http://{ipUri}/", UriKind.RelativeOrAbsolute, out var result);
+            HttpClient httpClient = new HttpClient();
+            HttpResponseMessage response = await httpClient.GetAsync(result);
+            if (response.IsSuccessStatusCode)
+            {
                 return true;
+            }
             else return false;
         }
     }

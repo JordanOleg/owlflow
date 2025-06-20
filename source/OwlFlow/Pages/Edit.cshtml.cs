@@ -9,10 +9,6 @@ namespace MyApp.Namespace
     [IgnoreAntiforgeryToken]
     public class EditModel : PageModel
     {
-        public class RequestIPAddress
-        {
-            public string IP { get; set; }
-        }
 
         [BindProperty]
         public Server EditServer { get; set; }
@@ -42,10 +38,34 @@ namespace MyApp.Namespace
             await _serviceServerRepository.UpdateServers();
             return RedirectToPage("/InfoServers");
         }
-        public async Task<IActionResult> OnGetTryConnection([FromBody] RequestIPAddress requestIP)
+        [HttpPost]
+        public async Task<IActionResult> OnPostTryConnection([FromBody] AddServerModel.RequestIPAddress requestIPAddress)
         {
-            bool result = await NetworkToolsServer.PingIp(requestIP.IP);
-            return new JsonResult(new { success = result });
+            try
+            {
+                bool result = await Task.Run(async () =>
+                {
+                    Uri.TryCreate($"http://{requestIPAddress.IP}/", UriKind.RelativeOrAbsolute, out var result);
+                    HttpClient httpClient = new HttpClient();
+                    HttpResponseMessage response = await httpClient.GetAsync(result);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return true;
+                    }
+                    else return false;
+                });
+                return new JsonResult(new { success = result })
+                {
+                    ContentType = "application/json"
+                };
+            }
+            catch
+            {
+                return new JsonResult(new { success = false })
+                {
+                    ContentType = "application/json"
+                };
+            }
         }
     }
 }

@@ -44,7 +44,7 @@
     </form>
 </div>
 <script>
-     async function tryConnect() {
+    async function tryConnect() {
         const ip = document.getElementById('ipInput').value;
         const button = document.getElementById('tryConnectBtn');
 
@@ -53,12 +53,12 @@
         button.textContent = 'Trying...';
 
         try {
-            const response = await fetch(`?handler=TryConnection`, {
-                method: 'GET',
+            const response = await fetch('/AddServer?handler=TryConnection', {
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ ip })
+                body: JSON.stringify({ IP: ip })
             });
 
             const result = await response.json();
