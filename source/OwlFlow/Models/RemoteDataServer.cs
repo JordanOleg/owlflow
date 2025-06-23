@@ -10,6 +10,8 @@ namespace OwlFlow.Models
 {
     public class RemoteDataServer
     {
+        public RemoteDataServer() { }
+
         [Range(0, 100)]
         [JsonPropertyName("useCPU")]
         public int? UseCPU { get; set; }
@@ -30,8 +32,7 @@ namespace OwlFlow.Models
         [JsonPropertyName("overloadingPermission")]
         public bool OverloadingPermission { get; set; }
 
-        [BindNever]
-        [Url(ErrorMessage = "Invalid URL")]
+        [JsonPropertyName("uri")]
         public string? URI { get; set; }
     }
 }

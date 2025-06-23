@@ -26,27 +26,29 @@ namespace OwlFlow.Models
         public string? IPAddress { get; set; }
 
         [Range(0, 100)]
-        [JsonPropertyName("useCPU")]
+        [JsonIgnore]
         public int? UseCPU { get; set; }
 
         [Range(0, 100)]
-        [JsonPropertyName("useMemory")]
+        [JsonIgnore]
         public int? UseMemory { get; set; }
 
-        [JsonPropertyName("countClient")]
+        [JsonIgnore]
         public int? CountClient { get; set; }
+        [JsonIgnore]
         public long? Ping { get; set; }
 
-        [JsonPropertyName("maxCapacityPeoples")]
+        [JsonIgnore]
         public int? MaxCapacityClient { get; set; }
 
-        [JsonPropertyName("countAllRequestUser")]
+        [JsonIgnore]
         public int? CountAllRequestUser { get; set; }
 
-        [JsonPropertyName("overloadingPermission")]
+        [JsonIgnore]
         public bool OverloadingPermission { get; set; }
 
         [BindNever]
+        [JsonIgnore]
         [Url(ErrorMessage = "Invalid URL")]
         public string? URI { get; set; }
         public void ResetProperty()

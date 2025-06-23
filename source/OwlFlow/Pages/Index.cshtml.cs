@@ -18,10 +18,6 @@ public class IndexModel : PageModel
 
     public void OnGet()
     {
-        Update();
-    }
-    public void Update()
-    {
-        Servers = Repository.GetServers();
+        
     }
 }
