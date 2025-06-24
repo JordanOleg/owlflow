@@ -43,11 +43,12 @@ namespace OwlFlow.Service.Background
                     IncludeFields = false,              // Не включати поля (якщо не потрібно)
                 };
                 using Stream stream = httpResponse.Content.ReadAsStream();
-                _log.LogInformation($"{await httpResponse.Content.ReadAsStringAsync()}");
+                _log.LogInformation($"Response {server.Name} = {await httpResponse.Content.ReadAsStringAsync()}");
                 RemoteDataServer tryDeserialyze = await JsonSerializer.DeserializeAsync<RemoteDataServer>(stream, options);
                 if (tryDeserialyze != null)
                 {
                     Initialize(server, tryDeserialyze);
+                    _log.LogInformation($"Server: {server.Name}\n\ncpu:{server.UseCPU}%, m: {server.UseMemory}%, ping:{server.Ping}ms, {server.CountAllRequestUser}");
                     server.IsConnected = true;
                     return true;
                 }
@@ -69,7 +70,6 @@ namespace OwlFlow.Service.Background
                     Ping pingClass = new Ping();
                     PingReply pingReply = pingClass.Send(IPEndPoint.Parse(ipAddress).Address.ToString(), 200);
                     server.Ping = pingReply.RoundtripTime;
-                    _log.LogInformation($"ping: {pingReply.RoundtripTime}\nResponse: {response.Content}");
                     return await DeserializeJson(response, server);
                 }
                 else return false;
@@ -82,29 +82,40 @@ namespace OwlFlow.Service.Background
         }
         public override async Task StartAsync(CancellationToken cancellationToken)
         {
-            await AllRequestServer();
+            Task result = AllRequestServer();
+            await result;
+            _log.LogInformation($"start: {result.IsFaulted} {result.IsCanceled}");
+            await base.StartAsync(cancellationToken);
         }
 
         private async Task AllRequestServer()
         {
-            foreach (Server server in _serviceRepository.Servers)
+            try
             {
-                using (HttpClient client = new HttpClient())
+                foreach (Server server in _serviceRepository.Servers)
                 {
-                    Uri.TryCreate($"http://{server.IPAddress}/health", UriKind.Absolute, out Uri? uri);
-                    if (uri == null)
+                    using (HttpClient client = new HttpClient())
                     {
-                        _log.LogWarning($"{uri} uri can`t create uri for ${server.Name}:{server.Id}");
+                        Uri.TryCreate($"http://{server.IPAddress}/health", UriKind.Absolute, out Uri? uri);
+                        if (uri == null)
+                        {
+                            _log.LogWarning($"{uri} uri can`t create uri for ${server.Name}:{server.Id}");
+                        }
+                        bool result = await this.RequestChecked(client, server.IPAddress, server, uri!);
+                        server.IsConnected = result;
+                        _log.LogInformation($"{server.Name} - {result}");
+                        Interlocked.Increment(ref _countInterlockedRequest);
                     }
-                    bool result = await this.RequestChecked(client,server.IPAddress, server, uri!);
-                    server.IsConnected = result;
-                    _log.LogInformation($"{server.Name} - {result}");
-                    Interlocked.Increment(ref _countInterlockedRequest);
                 }
+            }
+            catch (Exception ex)
+            {
+                _log.LogError(ex.Message);
             }
         }
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            _log.LogInformation("Start ExecuteAsync()");
             while (!stoppingToken.IsCancellationRequested)
             {
                 try
@@ -118,7 +129,8 @@ namespace OwlFlow.Service.Background
                 {
                     _log.LogError(ex.ToString());
                 }
-                await Task.Delay(TimeSpan.FromSeconds(15), stoppingToken);
+                _log.LogWarning($"iteration Checker");
+                await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
             }
         }
 
