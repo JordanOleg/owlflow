@@ -20,6 +20,8 @@
                         <th class="px-6 py-3">CPU</th>
                         <th class="px-6 py-3">Memory</th>
                         <th class="px-6 py-3">Clients</th>
+                        <th class="px-6 py-3">MaxCapacityClient</th>
+                        <th class="px-6 py-3">AllRequestUsers</th>
                         <th class="px-6 py-3 text-right">Actions</th>
                     </tr>
                 </thead>
@@ -52,7 +54,9 @@
                             </td>
                             <td class="px-6 py-4">@(server.IsConnected ? $"{server.UseCPU}%" : "—")</td>
                             <td class="px-6 py-4">@(server.IsConnected ? $"{server.UseMemory}%" : "—")</td>
-                            <td class="px-6 py-4">@server.CountClient</td>
+                            <td class="px-6 py-4">@(server.IsConnected ? $"{server.CountClient}" : "—")</td>
+                            <td class="px-6 py-4">@(server.IsConnected ? $"{server.MaxCapacityClient}" : "—")</td>    
+                            <td class="px-6 py-4">@(server.IsConnected ? $"{server.CountAllRequestUser}" : "—")</td>    
                             <td class="px-6 py-4 text-right">
                                 <a asp-page="Edit" asp-route-id="@server.Id" asp-route-name="@server.Name"
                                 class="bg-yellow-500 hover:bg-yellow-400 text-black px-3 py-1 rounded transition duration-200">
