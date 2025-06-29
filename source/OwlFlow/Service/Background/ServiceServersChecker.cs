@@ -48,7 +48,7 @@ namespace OwlFlow.Service.Background
                 if (tryDeserialyze != null)
                 {
                     Initialize(server, tryDeserialyze);
-                    _log.LogInformation($"Server: {server.Name}\n\ncpu:{server.UseCPU}%, m: {server.UseMemory}%, ping:{server.Ping}ms, {server.CountAllRequestUser}");
+                    _log.LogInformation($"Server: {server.Name} cpu:{server.UseCPU}%, m: {server.UseMemory}%, ping:{server.Ping}ms, {server.CountAllRequestUser}req");
                     server.IsConnected = true;
                     return true;
                 }

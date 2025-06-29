@@ -20,61 +20,54 @@ namespace OwlFlow.Middleware
         }
         private bool IsAdmin(HttpContext httpContext)
         {
-            var remoteIp = httpContext.Connection.RemoteIpAddress ?? 
-                        (httpContext.Request.Headers.TryGetValue("X-Forwarded-For", out var forwardedIps) 
-                        ? IPAddress.Parse(forwardedIps.First().Split(':')[0]) : null);
-
-            if (remoteIp == null)
-            {
-                _logger.LogWarning("IP-адреса клієнта не визначена");
-                return false;
-            }
-
-            // Перевірка на localhost (IPv4/IPv6) та Docker
-            if (IPAddress.IsLoopback(remoteIp) || 
-                remoteIp.ToString() == "172.17.0.1" || 
-                remoteIp.ToString().StartsWith("192.168."))
-            {
-                _logger.LogInformation($"Доступ адміна з IP: {remoteIp}");
-                return true;
-            }
-
-            return false;
+            return httpContext.Session.GetString("IsAdmin") == "true";
         }
 
-public async Task InvokeAsync(HttpContext httpContext, ServiceSelectServer serviceSelectServer)
-{
-    if (IsAdmin(httpContext))
-    {
-        await _requestDelegate.Invoke(httpContext);
-        return;
-    }
-
-    if (httpContext.Response.HasStarted)
-    {
-        _logger.LogWarning("Response has already started, skipping redirect.");
-        return;
-    }
+        public async Task InvokeAsync(HttpContext httpContext, ServiceSelectServer serviceSelectServer)
+        {
+            var path = httpContext.Request.Path;
     
-    Server server = serviceSelectServer.GetOptimalServer();
-    if (server == null || string.IsNullOrEmpty(server.IPAddress))
-    {
-        httpContext.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;
-        _logger.LogError("No available servers found.");
-        return;
-    }
+    // Сторінки, які доступні всім
+            if (path.StartsWithSegments("/Login") || 
+                path.StartsWithSegments("/css") || 
+                path.StartsWithSegments("/js") ||
+                path.StartsWithSegments("/lib") ||
+                path.StartsWithSegments("/images"))
+            {
+                await _requestDelegate.Invoke(httpContext);
+                return;
+            }
+            if (IsAdmin(httpContext))
+            {
+                await _requestDelegate.Invoke(httpContext);
+                return;
+            }
 
-    if (Uri.TryCreate(server.IPAddress, UriKind.Absolute, out var redirectUri))
-    {
-        httpContext.Response.Redirect(redirectUri.ToString());
-        _logger.LogInformation($"Redirected user to server: {server.IPAddress}");
-    }
-    else
-    {
-        httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
-        _logger.LogError($"Invalid server IP: {server.IPAddress}");
-    }
-}
+            if (httpContext.Response.HasStarted)
+            {
+                _logger.LogWarning("Response has already started, skipping redirect.");
+                return;
+            }
+            
+            Server server = serviceSelectServer.GetOptimalServer();
+            if (server == null || string.IsNullOrEmpty(server.IPAddress))
+            {
+                httpContext.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;
+                _logger.LogError("No available servers found.");
+                return;
+            }
+
+            if (Uri.TryCreate($"http://{server.IPAddress}/", UriKind.Absolute, out Uri? uri))
+            {
+                httpContext.Response.Redirect(uri.ToString());
+                _logger.LogInformation($"Redirected server: {server.IPAddress}");
+            }
+            else
+            {
+                httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                _logger.LogError($"Invalid server IP: {server.IPAddress}");
+            }
+        }
     }
     public static class RedirectionRequestMiddlewareExtensions
     {
